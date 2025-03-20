@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome to Uni Hub!</h1>
+        <p class="lead">Connect with your campus community, join groups, and attend events.</p>
+        <hr class="my-4">
+        <p>Find communities that share your interests and make the most of your university experience.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Get Started</a>
+    </div>
+{% endblock content %}
