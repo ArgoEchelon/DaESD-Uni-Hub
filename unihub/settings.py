@@ -142,6 +142,12 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
+# Logout redirect
+LOGOUT_REDIRECT_URL = 'home'  
+
+# Add this line to allow logout via GET request
+ACCOUNT_LOGOUT_ON_GET = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
