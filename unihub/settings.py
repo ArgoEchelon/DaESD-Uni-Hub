@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'api',
     
     # Custom apps
     'users',
@@ -87,11 +88,11 @@ WSGI_APPLICATION = 'unihub.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'unihub',
-        'USER': 'root', 
-        'PASSWORD': 'Password', 
-        'HOST': 'localhost',  
-        'PORT': '3306',       
+        'NAME': os.environ.get('DATABASE_NAME', 'unihub'),
+        'USER': os.environ.get('DATABASE_USER', 'root'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Password'),
+        'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
+        'PORT': os.environ.get('DATABASE_PORT', '3306'),
     }
 }
 

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ community.name }}{% endblock %}
+{% block content %}
+    <div class="card mb-4">
+        <img src="{{ community.image.url }}" class="card-img-top" alt="{{ community.name }}">
+        <div class="card-body">
+            <h2 class="card-title">{{ community.name }}</h2>
+            <p class="card-text">{{ community.description }}</p>
+            <p class="card-text"><small class="text-muted">Created on {{ community.created_at|date }}</small></p>
+            
+            {% if user.is_authenticated and not is_member %}
+                <form method="POST" action="{% url 'join_community' community.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Join Community</button>
+                </form>
+            {% elif is_member %}
+                <p class="text-success">You are a member of this community</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Upcoming Events</h3>
+        </div>
+        <div class="card-body">
+            {% if community.events.all %}
+                <ul class="list-group list-group-flush">
+                    {% for event in community.events.all %}
+                        <li class="list-group-item">
+                            <a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>
+                            <small class="text-muted">{{ event.start_time|date:"F d, Y" }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No upcoming events for this community.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3>Recent Posts</h3>
+        </div>
+        <div class="card-body">
+            {% if community.posts.all %}
+                {% for post in community.posts.all|slice:":5" %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.content|truncatechars:150 }}</p>
+                            <p class="card-text"><small class="text-muted">Posted by {{ post.author.username }} on {{ post.created_at|date }}</small></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No posts in this community yet.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

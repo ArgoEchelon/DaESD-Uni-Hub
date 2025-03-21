@@ -25,9 +25,9 @@ services:
       - db
     environment:
       - DATABASE_HOST=db
-      - DATABASE_NAME=unihub_db
-      - DATABASE_USER=dbuser
-      - DATABASE_PASSWORD=dbpassword
+      - DATABASE_NAME=unihub
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=Password
 
 volumes:
   mysql_data:

@@ -1,4 +1,32 @@
 from django.shortcuts import render
+from django.utils import timezone
+from communities.models import Community
+from events.models import Event
+from posts.models import Post
 
 def home(request):
-    return render(request, 'home.html')
+    communities = Community.objects.all()[:5]
+    events = Event.objects.filter(start_time__gte=timezone.now()).order_by('start_time')[:5]
+    return render(request, 'home.html', {
+        'communities': communities,
+        'events': events
+    })
+
+def search(request):
+    query = request.GET.get('q', '')
+    
+    if query:
+        communities = Community.objects.filter(name__icontains=query)
+        events = Event.objects.filter(title__icontains=query)
+        posts = Post.objects.filter(title__icontains=query)
+    else:
+        communities = Community.objects.none()
+        events = Event.objects.none()
+        posts = Post.objects.none()
+    
+    return render(request, 'search.html', {
+        'communities': communities,
+        'events': events,
+        'posts': posts,
+        'query': query
+    })

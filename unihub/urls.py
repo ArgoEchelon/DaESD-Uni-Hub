@@ -28,7 +28,12 @@ urlpatterns = [
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html', next_page='home'), name='logout'),
+    path('communities/', include('communities.urls')),
+    path('events/', include('events.urls')),
+    path('posts/', include('posts.urls')),
+    path('api/', include('api.urls')),
+    path('search/', views.search, name='search'),
 ]
 
 if settings.DEBUG:
