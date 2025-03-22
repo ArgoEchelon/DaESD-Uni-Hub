@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Create Post{% endblock %}
+{% block title %}{% if edit_mode %}Edit{% else %}Create{% endif %} Post{% endblock %}
 {% block content %}
     <div class="card">
         <div class="card-header">
-            <h2>Create Post in {{ community.name }}</h2>
+            <h2>{% if edit_mode %}Edit{% else %}Create{% endif %} Post in {{ community.name }}</h2>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -12,7 +12,12 @@
                     {{ form.as_p }}
                 </fieldset>
                 <div class="form-group">
-                    <button class="btn btn-primary" type="submit">Post</button>
+                    <button class="btn btn-primary" type="submit">{% if edit_mode %}Update{% else %}Post{% endif %}</button>
+                    {% if edit_mode %}
+                        <a class="btn btn-secondary" href="{% url 'post_detail' post.pk %}">Cancel</a>
+                    {% else %}
+                        <a class="btn btn-secondary" href="{% url 'community_detail' community.pk %}">Cancel</a>
+                    {% endif %}
                 </div>
             </form>
         </div>

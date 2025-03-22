@@ -17,9 +17,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" href="/">Home</a>
-                        <a class="nav-item nav-link" href="/communities/">Communities</a>
-                        <a class="nav-item nav-link" href="/events/">Events</a>
+                        <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+                        <a class="nav-item nav-link" href="{% url 'community_list' %}">Communities</a>
+                        <a class="nav-item nav-link" href="{% url 'event_list' %}">Events</a>
+                        <a class="nav-item nav-link" href="{% url 'post_list' %}">Posts</a>
                     </div>
                     <div class="navbar-nav">
                         {% if user.is_authenticated %}

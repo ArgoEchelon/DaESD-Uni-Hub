@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Event, Participation
 from .forms import EventForm
 from communities.models import Community
@@ -40,3 +41,45 @@ def join_event(request, pk):
     if not request.user.events.filter(id=event.id).exists():
         Participation.objects.create(user=request.user, event=event, status='GOING')
     return redirect('event_detail', pk=event.pk)
+
+@login_required
+def event_edit(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    
+    # Check if user is the organizer
+    if request.user != event.organizer:
+        messages.error(request, 'You can only edit events you organized.')
+        return redirect('event_detail', pk=event.pk)
+    
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event has been updated!')
+            return redirect('event_detail', pk=event.pk)
+    else:
+        form = EventForm(instance=event)
+    
+    return render(request, 'events/event_form.html', {
+        'form': form, 
+        'community': event.community,
+        'edit_mode': True,
+        'event': event
+    })
+
+@login_required
+def event_delete(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    
+    # Check if user is the organizer
+    if request.user != event.organizer:
+        messages.error(request, 'You can only delete events you organized.')
+        return redirect('event_detail', pk=event.pk)
+    
+    if request.method == 'POST':
+        community_pk = event.community.pk
+        event.delete()
+        messages.success(request, 'Event has been deleted!')
+        return redirect('community_detail', pk=community_pk)
+    
+    return render(request, 'events/event_confirm_delete.html', {'event': event})

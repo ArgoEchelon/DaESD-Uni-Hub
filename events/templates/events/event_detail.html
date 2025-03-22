@@ -4,6 +4,12 @@
     <div class="card mb-4">
         <div class="card-header">
             <h2>{{ event.title }}</h2>
+            {% if user.is_authenticated and user == event.organizer %}
+                <div>
+                    <a href="{% url 'event_edit' event.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{% url 'event_delete' event.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            {% endif %}
             <small>
                 <a href="{% url 'community_detail' event.community.pk %}">{{ event.community.name }}</a>
             </small>

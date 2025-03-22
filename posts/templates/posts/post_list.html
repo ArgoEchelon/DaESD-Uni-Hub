@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Posts{% endblock %}
+{% block title %}{% if community %}Posts in {{ community.name }}{% else %}All Posts{% endif %}{% endblock %}
 {% block content %}
     <div class="card">
         <div class="card-header">
-            <h2>Recent Posts</h2>
+            <h2>{% if community %}Posts in {{ community.name }}{% else %}All Posts{% endif %}</h2>
         </div>
         <div class="card-body">
             {% if posts %}
