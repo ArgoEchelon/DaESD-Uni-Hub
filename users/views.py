@@ -12,7 +12,7 @@ def register(request):
             messages.success(request, f'Account created for {username}! You can now log in.')
             return redirect('login')
         else:
-            # Add this to see form errors
+            # Used to see errors on the form
             print(form.errors)
     else:
         form = UserRegisterForm()

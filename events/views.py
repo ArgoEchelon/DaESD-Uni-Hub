@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Event, Participation
 from .forms import EventForm
-from communities.models import Community
+from communities.models import Community, Membership
 
 @login_required
 def event_list(request):

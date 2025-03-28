@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
-from communities.models import Community
+from communities.models import Community, Membership
 
 def post_list(request, community_pk=None):
     # If a community ID is provided, filter posts by that community
@@ -48,18 +48,26 @@ def post_detail(request, pk):
     })
 
 @login_required
-def post_create(request, community_pk):
-    community = get_object_or_404(Community, pk=community_pk)
+def post_create(request, community_id):
+    community = get_object_or_404(Community, id=community_id)
+    
+    # Check if user is a member of the community
+    if not Membership.objects.filter(user=request.user, community=community).exists():
+        messages.error(request, 'You must be a member of the community to create posts.')
+        return redirect('community_detail', pk=community.pk)
+    
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.community = community
             post.save()
+            messages.success(request, 'Post created successfully!')
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm()
+    
     return render(request, 'posts/post_form.html', {'form': form, 'community': community})
 
 @login_required
@@ -72,7 +80,7 @@ def post_edit(request, pk):
         return redirect('post_detail', pk=post.pk)
     
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your post has been updated!')
@@ -83,7 +91,8 @@ def post_edit(request, pk):
     return render(request, 'posts/post_form.html', {
         'form': form, 
         'community': post.community,
-        'edit_mode': True
+        'edit_mode': True,
+        'post': post
     })
 
 @login_required
