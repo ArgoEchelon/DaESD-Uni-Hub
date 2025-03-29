@@ -5,27 +5,21 @@ from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from communities.models import Community, Membership
 
-def post_list(request, community_pk=None):
-    # If a community ID is provided, filter posts by that community
-    if community_pk:
-        community = get_object_or_404(Community, pk=community_pk)
-        posts = Post.objects.filter(community=community).order_by('-created_at')
-        context = {'posts': posts, 'community': community}
-    else:
-        # If no community ID is provided, show all posts or posts from user's communities
-        if request.user.is_authenticated:
-            # Note: Undecided which method preferred
-            # Option 1: Show posts from communities the user is a member of
-            user_communities = request.user.communities.all()
-            posts = Post.objects.filter(community__in=user_communities).order_by('-created_at')
-            # Option 2: Show all posts 
-            # posts = Post.objects.all().order_by('-created_at')
-        else:
-            # For non-authenticated users, show all posts
-            posts = Post.objects.all().order_by('-created_at')
-        context = {'posts': posts}
+def post_list(request):
+    filter_option = request.GET.get('filter', None)
     
-    return render(request, 'posts/post_list.html', context)
+    if filter_option == 'my_posts' and request.user.is_authenticated:
+        # Filter posts by current user
+        posts = Post.objects.filter(author=request.user).order_by('-created_at')
+    elif request.user.is_authenticated:
+        # Get communities the user is a member of
+        user_communities = request.user.communities.all()
+        posts = Post.objects.filter(community__in=user_communities).order_by('-created_at')
+    else:
+        # For non-authenticated users, show all posts
+        posts = Post.objects.all().order_by('-created_at')
+    
+    return render(request, 'posts/post_list.html', {'posts': posts, 'filter': filter_option})
 
 @login_required
 def post_detail(request, pk):

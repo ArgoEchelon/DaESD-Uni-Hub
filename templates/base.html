@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Uni Hub - {% block title %}{% endblock %}</title>
 </head>
 <body>
@@ -57,14 +58,48 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-header">Quick Links</div>
-                    <div class="card-body">
+                    <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Latest Events</li>
-                            <li class="list-group-item">Trending Communities</li>
-                            <li class="list-group-item">Recent Posts</li>
+                            <a href="{% url 'event_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Latest Events
+                                <span class="badge badge-primary badge-pill">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </a>
+                            <a href="{% url 'community_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Trending Communities
+                                <span class="badge badge-primary badge-pill">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </a>
+                            <a href="{% url 'post_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Recent Posts
+                                <span class="badge badge-primary badge-pill">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </a>
                         </ul>
                     </div>
                 </div>
+                
+                {% if user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-header">Your Activity</div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                                Your Profile
+                            </a>
+                            <a href="{% url 'post_list' %}?filter=my_posts" class="list-group-item list-group-item-action">
+                                Your Posts
+                            </a>
+                            <a href="{% url 'event_list' %}?filter=attending" class="list-group-item list-group-item-action">
+                                Events You're Attending
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </main>

@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 from .models import Event, Participation
 from .forms import EventForm
 from communities.models import Community, Membership
 
-@login_required
 def event_list(request):
-    events = Event.objects.all()
-    return render(request, 'events/event_list.html', {'events': events})
+    filter_option = request.GET.get('filter', None)
+    
+    if filter_option == 'attending' and request.user.is_authenticated:
+        # Get events the user is attending
+        events = Event.objects.filter(participants=request.user).order_by('start_time')
+    else:
+        # Show all upcoming events
+        events = Event.objects.filter(start_time__gte=timezone.now()).order_by('start_time')
+    
+    return render(request, 'events/event_list.html', {'events': events, 'filter': filter_option})
 
 @login_required
 def event_detail(request, pk):
