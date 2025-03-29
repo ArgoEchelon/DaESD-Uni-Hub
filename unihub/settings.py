@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-@kjaq&tlb!!5k0vz^y4u%mnd0tp$l1^*!pn_*0_)ui#h=*j9ya
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']  # restrict this in production
 
 
 # Application definition
@@ -93,6 +93,9 @@ DATABASES = {
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Password'),
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
