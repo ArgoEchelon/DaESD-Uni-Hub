@@ -47,6 +47,26 @@ services:
       - unihub_network
     restart: always
     
+  api:
+    build: .
+    container_name: unihub_api
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DATABASE_HOST=db
+      - DATABASE_NAME=${DB_NAME:-unihub_db}
+      - DATABASE_USER=${DB_USER:-dbuser}
+      - DATABASE_PASSWORD=${DB_PASSWORD:-dbpassword}
+      - DATABASE_PORT=3306
+      - DJANGO_SETTINGS_MODULE=unihub.settings_api
+    networks:
+      - unihub_network
 
   nginx:
     image: nginx:latest
