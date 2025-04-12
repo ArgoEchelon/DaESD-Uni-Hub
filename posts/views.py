@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Count
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from communities.models import Community, Membership
@@ -109,8 +110,22 @@ def post_delete(request, pk):
 @login_required
 def post_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    
+    # Toggle like status
     if request.user in post.likes.all():
         post.likes.remove(request.user)
+        messages.success(request, 'You unliked this post.')
     else:
         post.likes.add(request.user)
-    return redirect('post_detail', pk=post.pk)
+        messages.success(request, 'You liked this post.')
+    
+    # Get the referer URL to redirect back to the same page
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    else:
+        return redirect('post_detail', pk=post.pk)
+    
+def popular_posts(request):
+    posts = Post.objects.annotate(like_count=Count('likes')).order_by('-like_count')[:5]
+    return render(request, 'posts/popular_posts_snippet.html', {'posts': posts})

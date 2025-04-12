@@ -81,7 +81,20 @@
                         </ul>
                     </div>
                 </div>
-                
+
+                <div class="card mb-4">
+                    <div class="card-header">Popular Posts</div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="popular-posts">
+                            <li class="list-group-item text-center">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
                 {% if user.is_authenticated %}
                 <div class="card mb-4">
                     <div class="card-header">Your Activity</div>
@@ -109,3 +122,16 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch("{% url 'popular_posts' %}")
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('popular-posts').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading popular posts:', error);
+            });
+    });
+</script>

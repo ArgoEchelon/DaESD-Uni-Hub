@@ -29,14 +29,18 @@
             </p>
             
             {% if user.is_authenticated %}
-                <form method="POST" action="{% url 'post_like' post.pk %}">
+                <form method="POST" action="{% url 'post_like' post.pk %}" class="mb-3">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm {% if user in post.likes.all %}btn-danger{% else %}btn-outline-danger{% endif %}">
-                        {% if user in post.likes.all %}Unlike{% else %}Like{% endif %} ({{ post.likes.count }})
+                        <i class="fa fa-heart"></i> 
+                        {% if user in post.likes.all %}Unlike{% else %}Like{% endif %} 
+                        <span class="badge badge-light">{{ post.likes.count }}</span>
                     </button>
                 </form>
             {% else %}
-                <p>{{ post.likes.count }} likes</p>
+                <p class="mb-3">
+                    <i class="fa fa-heart text-danger"></i> {{ post.likes.count }} likes
+                </p>
             {% endif %}
         </div>
     </div>
