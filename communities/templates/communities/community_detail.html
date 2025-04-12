@@ -80,7 +80,7 @@
                                     <p class="card-text">{{ post.content|truncatechars:100 }}</p>
                                     <p class="card-text">
                                         <small class="text-muted">
-                                            Posted by {{ post.author.username }} on {{ post.created_at|date }}
+                                            Posted by <a href="{% url 'user_detail' post.author.username %}">{{ post.author.username }}</a> on {{ post.created_at|date }}
                                             • <i class="fa fa-heart text-danger"></i> {{ post.likes.count }}
                                         </small>
                                     </p>

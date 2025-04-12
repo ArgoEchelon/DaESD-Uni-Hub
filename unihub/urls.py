@@ -34,6 +34,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('api/', include('api.urls')),
     path('search/', views.search, name='search'),
+    path('users/', include('users.urls')),
 ]
 
 if settings.DEBUG:

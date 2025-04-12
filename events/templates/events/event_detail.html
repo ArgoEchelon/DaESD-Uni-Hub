@@ -17,7 +17,7 @@
         <div class="card-body">
             <p class="card-text">{{ event.description }}</p>
             <hr>
-            <p><strong>Organized by:</strong> {{ event.organizer.username }}</p>
+            <p><strong>Organized by:</strong> <a href="{% url 'user_detail' event.organizer.username %}">{{ event.organizer.username }}</a></p>
             <p><strong>Date:</strong> {{ event.start_time|date:"F d, Y" }}</p>
             <p><strong>Time:</strong> {{ event.start_time|date:"g:i a" }} - {{ event.end_time|date:"g:i a" }}</p>
             <p><strong>Location:</strong> {{ event.location }}</p>
@@ -42,7 +42,7 @@
                 <ul class="list-group list-group-flush">
                     {% for participation in event.participation_set.all %}
                         <li class="list-group-item">
-                            {{ participation.user.username }} - {{ participation.get_status_display }}
+                            <a href="{% url 'user_detail' participation.user.username %}">{{ participation.user.username }}</a> - {{ participation.get_status_display }}
                         </li>
                     {% endfor %}
                 </ul>
