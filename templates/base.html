@@ -21,16 +21,6 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarToggle">
-<<<<<<< HEAD
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'community_list' %}">Communities</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'event_list' %}">Events</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'post_list' %}">Posts</a></li>
-                    </ul>
-
-                    <ul class="navbar-nav ml-auto align-items-center">
-=======
                     <div class="navbar-nav mr-auto">
                         <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
                         <a class="nav-item nav-link" href="{% url 'community_list' %}">Communities</a>
@@ -39,7 +29,6 @@
                         <a class="nav-item nav-link" href="{% url 'user_notifications' %}">🔔 Notifications</a>  <!-- ✅ Added Notifications Link -->
                     </div>
                     <div class="navbar-nav">
->>>>>>> 0129e61 (Added Notifications feature and updated Posts search and Navbar)
                         {% if user.is_authenticated %}
                             <li class="nav-item"><a class="nav-link text-white" href="{% url 'user_detail' user.username %}">My Profile</a></li>
                             <li class="nav-item"><a class="nav-link text-white" href="{% url 'profile' %}">Edit Profile</a></li>
