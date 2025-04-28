@@ -24,6 +24,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('notifications/', include('notifications.urls')),
     path('', views.home, name='home'),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),

@@ -1,27 +1,35 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count
+from django.db.models import Count, Q
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from communities.models import Community, Membership
-
 def post_list(request):
     filter_option = request.GET.get('filter', None)
-    
+    search_query = request.GET.get('q', '')  # New: get search query
+
     if filter_option == 'my_posts' and request.user.is_authenticated:
-        # Filter posts by current user
         posts = Post.objects.filter(author=request.user).order_by('-created_at')
     elif request.user.is_authenticated:
-        # Get communities the user is a member of
         user_communities = request.user.communities.all()
         posts = Post.objects.filter(community__in=user_communities).order_by('-created_at')
     else:
-        # For non-authenticated users, show all posts
         posts = Post.objects.all().order_by('-created_at')
-    
-    return render(request, 'posts/post_list.html', {'posts': posts, 'filter': filter_option})
 
+    # New: Apply search filter
+    if search_query:
+        posts = posts.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(community__name__icontains=search_query)
+        )
+
+    return render(request, 'posts/post_list.html', {
+        'posts': posts,
+        'filter': filter_option,
+        'search_query': search_query
+    })
 @login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)

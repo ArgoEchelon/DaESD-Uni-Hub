@@ -21,6 +21,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarToggle">
+<<<<<<< HEAD
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}">Home</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'community_list' %}">Communities</a></li>
@@ -29,6 +30,16 @@
                     </ul>
 
                     <ul class="navbar-nav ml-auto align-items-center">
+=======
+                    <div class="navbar-nav mr-auto">
+                        <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+                        <a class="nav-item nav-link" href="{% url 'community_list' %}">Communities</a>
+                        <a class="nav-item nav-link" href="{% url 'event_list' %}">Events</a>
+                        <a class="nav-item nav-link" href="{% url 'post_list' %}">Posts</a>
+                        <a class="nav-item nav-link" href="{% url 'user_notifications' %}">🔔 Notifications</a>  <!-- ✅ Added Notifications Link -->
+                    </div>
+                    <div class="navbar-nav">
+>>>>>>> 0129e61 (Added Notifications feature and updated Posts search and Navbar)
                         {% if user.is_authenticated %}
                             <li class="nav-item"><a class="nav-link text-white" href="{% url 'user_detail' user.username %}">My Profile</a></li>
                             <li class="nav-item"><a class="nav-link text-white" href="{% url 'profile' %}">Edit Profile</a></li>
@@ -118,18 +129,15 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            fetch("{% url 'popular_posts' %}")
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('popular-posts').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error loading popular posts:', error);
-                });
-        });
-    </script>
-</body>
-
-</html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch("{% url 'popular_posts' %}")
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('popular-posts').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading popular posts:', error);
+            });
+    });
+</script>

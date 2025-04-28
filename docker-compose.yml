@@ -5,8 +5,6 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: ${DB_NAME:-unihub_db}
-      MYSQL_USER: ${DB_USER:-dbUnihub}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-Password}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Password}
     volumes:
       - mysql_data:/var/lib/mysql
