@@ -3,11 +3,23 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Community, Membership
 from . forms import CommunityForm
+from django.db.models import Q
 
 @login_required
 def community_list(request):
+    query = request.GET.get('q', '')
     communities = Community.objects.all()
-    return render(request, 'communities/community_list.html', {'communities': communities})
+
+    if query:
+        keywords = [kw.strip() for kw in query.split(',') if kw.strip()]
+        q_objects = Q()
+
+        for keyword in keywords:
+            q_objects |= Q(name__icontains=keyword) | Q(tags__name__icontains=keyword)
+
+        communities = communities.filter(q_objects).distinct()
+
+    return render(request, 'communities/communities.html', {'communities': communities, 'query': query})
 
 @login_required
 def community_detail(request, pk):
