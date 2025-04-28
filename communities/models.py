@@ -10,7 +10,7 @@ class Tag(models.Model):
 class Community(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    tags = models.ManyToManyField(Tag, blank=True, related_name='communities')  # 🔥 NEW
+    tags = models.ManyToManyField(Tag, blank=True, related_name='communities')
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_communities')
     members = models.ManyToManyField(User, through='Membership', related_name='communities')
