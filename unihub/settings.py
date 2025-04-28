@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'communities',
     'events',
     'posts',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

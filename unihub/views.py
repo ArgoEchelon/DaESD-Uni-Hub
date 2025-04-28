@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.utils import timezone
+from django.db.models import Q 
 from communities.models import Community
 from events.models import Event
 from posts.models import Post
@@ -13,12 +14,24 @@ def home(request):
     })
 
 def search(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip() 
     
     if query:
-        communities = Community.objects.filter(name__icontains=query)
-        events = Event.objects.filter(title__icontains=query)
-        posts = Post.objects.filter(title__icontains=query)
+        communities = Community.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(tags__name__icontains=query)   
+        ).distinct()
+
+        events = Event.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) 
+        )
+
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) 
+        )
     else:
         communities = Community.objects.none()
         events = Event.objects.none()
