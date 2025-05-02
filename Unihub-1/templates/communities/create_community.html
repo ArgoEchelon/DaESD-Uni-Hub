@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Create Community{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white fw-semibold">
+    <i class="fas fa-users"></i> Create Community
+  </div>
+
+  <div class="card-body">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="id_name" class="form-label">Community Name</label>
+        {{ form.name|add_class:"form-control" }}
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="id_description" class="form-label">Description</label>
+        {{ form.description|add_class:"form-control" }}
+      </div>
+
+      <!-- Image -->
+      <div class="mb-4">
+        <label for="id_image" class="form-label">Community Image</label>
+        {{ form.image|add_class:"form-control" }}
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'community_list' %}" class="btn btn-secondary me-2">
+          <i class="fas fa-times"></i> Cancel
+        </a>
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-plus"></i> Create
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

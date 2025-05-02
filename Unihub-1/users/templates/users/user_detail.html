@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ profile_user.username }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img class="rounded-circle account-img" src="{{ profile_user.profile.profile_picture.url }}" width="150" height="150" style="object-fit: cover;">
+                    </div>
+                    <p><strong>Email:</strong> {% if is_own_profile %}{{ profile_user.email }}{% else %}Private{% endif %}</p>
+                    {% if profile_user.profile.bio %}
+                        <p><strong>Bio:</strong> {{ profile_user.profile.bio }}</p>
+                    {% endif %}
+                    {% if profile_user.profile.major %}
+                        <p><strong>Major:</strong> {{ profile_user.profile.major }}</p>
+                    {% endif %}
+                    {% if profile_user.profile.year_of_study %}
+                        <p><strong>Year:</strong> {{ profile_user.profile.year_of_study }}</p>
+                    {% endif %}
+                    <p><strong>Joined:</strong> {{ profile_user.date_joined|date:"F d, Y" }}</p>
+                    
+                    {% if is_own_profile %}
+                        <div class="mt-3">
+                            <a href="{% url 'profile' %}" class="btn btn-primary btn-block">Edit Profile</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Communities</h3>
+                </div>
+                <div class="card-body">
+                    {% if communities %}
+                        <div class="row">
+                            {% for community in communities %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a href="{% url 'community_detail' community.pk %}">{{ community.name }}</a>
+                                            </h5>
+                                            <p class="card-text small">{{ community.description|truncatechars:100 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>{{ profile_user.username }} hasn't joined any communities yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Recent Posts</h3>
+                </div>
+                <div class="card-body">
+                    {% if posts %}
+                        {% for post in posts %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <a href="{% url 'community_detail' post.community.pk %}">{{ post.community.name }}</a>
+                                    </h6>
+                                    <p class="card-text">{{ post.content|truncatechars:150 }}</p>
+                                    <p class="card-text">
+                                        <small class="text-muted">{{ post.created_at|date }}</small>
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>{{ profile_user.username }} hasn't created any posts yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Upcoming Events</h3>
+                </div>
+                <div class="card-body">
+                    {% if events %}
+                        {% for event in events %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <a href="{% url 'community_detail' event.community.pk %}">{{ event.community.name }}</a>
+                                    </h6>
+                                    <p class="card-text">
+                                        <strong>When:</strong> {{ event.start_time|date:"F d, Y, g:i a" }}
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Where:</strong> {{ event.location }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>{{ profile_user.username }} isn't organizing any upcoming events.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

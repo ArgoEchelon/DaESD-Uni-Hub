@@ -1,0 +1,91 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: unihub_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-unihub_db}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - unihub_network 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-Password}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    container_name: unihub_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DATABASE_HOST=db
+      - DATABASE_NAME=${DB_NAME:-unihub_db}
+      - DATABASE_USER=${DB_USER:-dbUnihub}
+      - DATABASE_PASSWORD=${DB_PASSWORD:-Password}
+      - DATABASE_PORT=3306
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@test.com}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-Password}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-key-for-development}
+    networks:
+      - unihub_network
+    restart: always
+    
+  api:
+    build: .
+    container_name: unihub_api
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DATABASE_HOST=db
+      - DATABASE_NAME=${DB_NAME:-unihub_db}
+      - DATABASE_USER=${DB_USER:-dbuser}
+      - DATABASE_PASSWORD=${DB_PASSWORD:-dbpassword}
+      - DATABASE_PORT=3306
+      - DJANGO_SETTINGS_MODULE=unihub.settings_api
+    networks:
+      - unihub_network
+
+  nginx:
+    image: nginx:latest
+    container_name: unihub_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_files:/static
+      - media_files:/media
+    depends_on:
+      - web
+    networks:
+      - unihub_network
+    restart: always
+
+networks:
+  unihub_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  static_files:
+  media_files:

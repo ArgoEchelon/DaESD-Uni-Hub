@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>{{ event.title }}</h2>
+            {% if user.is_authenticated and user == event.organizer %}
+                <div>
+                    <a href="{% url 'event_edit' event.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{% url 'event_delete' event.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            {% endif %}
+            <small>
+                <a href="{% url 'community_detail' event.community.pk %}">{{ event.community.name }}</a>
+            </small>
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ event.description }}</p>
+            <hr>
+            <p><strong>Organized by:</strong> <a href="{% url 'user_detail' event.organizer.username %}">{{ event.organizer.username }}</a></p>
+            <p><strong>Date:</strong> {{ event.start_time|date:"F d, Y" }}</p>
+            <p><strong>Time:</strong> {{ event.start_time|date:"g:i a" }} - {{ event.end_time|date:"g:i a" }}</p>
+            <p><strong>Location:</strong> {{ event.location }}</p>
+            
+            {% if user.is_authenticated and not is_participating %}
+                <form method="POST" action="{% url 'join_event' event.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Attend This Event</button>
+                </form>
+            {% elif is_participating %}
+                <p class="text-success">You are attending this event</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3>Participants</h3>
+        </div>
+        <div class="card-body">
+            {% if event.participants.all %}
+                <ul class="list-group list-group-flush">
+                    {% for participation in event.participation_set.all %}
+                        <li class="list-group-item">
+                            <a href="{% url 'user_detail' participation.user.username %}">{{ participation.user.username }}</a> - {{ participation.get_status_display }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No one has joined this event yet.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

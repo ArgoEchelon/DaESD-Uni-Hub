@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{% if edit_mode %}Edit{% else %}Create{% endif %} Event{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>{% if edit_mode %}Edit{% else %}Create{% endif %} Event for {{ community.name }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    {{ form.as_p }}
+                </fieldset>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">{% if edit_mode %}Update{% else %}Create{% endif %} Event</button>
+                    {% if edit_mode %}
+                        <a class="btn btn-secondary" href="{% url 'event_detail' event.pk %}">Cancel</a>
+                    {% else %}
+                        <a class="btn btn-secondary" href="{% url 'community_detail' community.pk %}">Cancel</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

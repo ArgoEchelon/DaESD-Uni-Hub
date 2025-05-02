@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Communities{% endblock %}
+
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Communities</h2>
+    <a href="{% url 'community_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-1"></i> Create Community
+    </a>
+</div>
+
+<form method="get" action="{% url 'community_list' %}" class="d-flex mb-4">
+    <input 
+        type="text" 
+        name="q" 
+        class="form-control me-2" 
+        placeholder="Search communities or tags..." 
+        value="{{ query|default:'' }}"
+    >
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+</form>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for community in communities %}
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                {% if community.image %}
+                    <img src="{{ community.image.url }}" class="card-img-top" alt="{{ community.name }}" style="height: 180px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'default_community.jpg' %}" class="card-img-top" alt="Default Image" style="height: 180px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold">{{ community.name }}</h5>
+                    <p class="card-text text-muted">{{ community.description|truncatewords:20 }}</p>
+                    <p class="small text-secondary">Created on {{ community.created_at|date:"F d, Y" }}</p>
+
+                    <p class="small text-muted mb-2">
+                        Tags:
+                        {% for tag in community.tags.all %}
+                            <span class="badge bg-secondary">{{ tag.name }}</span>
+                        {% empty %}
+                            No tags
+                        {% endfor %}
+                    </p>
+
+                    <a href="{% url 'community_detail' community.pk %}" class="btn btn-outline-primary btn-sm">
+                        View Community
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col">
+            <p class="text-muted">No communities yet.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

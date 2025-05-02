@@ -1,0 +1,12 @@
+{% for post in posts %}
+    <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1">{{ post.title|truncatechars:30 }}</h6>
+        </div>
+        <small>
+            <i class="fa fa-heart text-danger"></i> {{ post.likes.count }}
+        </small>
+    </a>
+{% empty %}
+    <li class="list-group-item">No posts yet</li>
+{% endfor %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Delete Event{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Delete Event</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="alert alert-danger">
+                    <p>Are you sure you want to delete the event "{{ event.title }}"?</p>
+                    <p>This action cannot be undone.</p>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit">Confirm Delete</button>
+                    <a class="btn btn-secondary" href="{% url 'event_detail' event.pk %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}  

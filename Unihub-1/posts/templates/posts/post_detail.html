@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>{{ post.title }}</h2>
+            {% if user.is_authenticated and user == post.author %}
+                <div>
+                    <a href="{% url 'post_edit' post.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{% url 'post_delete' post.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            {% endif %}
+            <small>
+                <a href="{% url 'community_detail' post.community.pk %}">{{ post.community.name }}</a>
+            </small>
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ post.content }}</p>
+            {% if post.image %}
+                <div class="my-3">
+                    <img src="{{ post.image.url }}" class="img-fluid rounded" alt="{{ post.title }} image">
+                </div>
+            {% endif %}
+            <hr>
+            <p class="card-text">
+                <small class="text-muted">
+                    Posted by <a href="{% url 'user_detail' post.author.username %}">{{ post.author.username }}</a> on {{ post.created_at|date:"F d, Y, g:i a" }}
+                </small>
+            </p>
+            
+            {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'post_like' post.pk %}" class="mb-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm {% if user in post.likes.all %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                        <i class="fa fa-heart"></i> 
+                        {% if user in post.likes.all %}Unlike{% else %}Like{% endif %} 
+                        <span class="badge badge-light">{{ post.likes.count }}</span>
+                    </button>
+                </form>
+            {% else %}
+                <p class="mb-3">
+                    <i class="fa fa-heart text-danger"></i> {{ post.likes.count }} likes
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Comments ({{ comments.count }})</h3>
+        </div>
+        <div class="card-body">
+            {% if comments %}
+                {% for comment in comments %}
+                    <div class="media mb-3">
+                        <div class="media-body">
+                            <h5 class="mt-0"><a href="{% url 'user_detail' comment.author.username %}">{{ comment.author.username }}</a></h5>
+                            <p>{{ comment.content }}</p>
+                            <small class="text-muted">{{ comment.created_at|date:"F d, Y, g:i a" }}</small>
+                        </div>
+                    </div>
+                    {% if not forloop.last %}<hr>{% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No comments yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if user.is_authenticated %}
+        <div class="card">
+            <div class="card-header">
+                <h3>Add a Comment</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ comment_form.as_p }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Add Comment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}z

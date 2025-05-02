@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Delete Community{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Delete Community</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="alert alert-danger">
+                    <p>Are you sure you want to delete the community "{{ community.name }}"?</p>
+                    <p><strong>Warning:</strong> This will permanently delete the community, all events, and all posts associated with it.</p>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit">Confirm Delete</button>
+                    <a class="btn btn-secondary" href="{% url 'community_detail' community.pk %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
