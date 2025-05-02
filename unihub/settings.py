@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'widget_tweaks',
     'api',
     
     # Custom apps
