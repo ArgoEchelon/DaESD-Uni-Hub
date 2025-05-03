@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Event, Participation
 from .forms import EventForm
-from communities.models import Community, Membership
+from communities.models import Community, Membership, Tag
 
 def event_list(request):
     filter_option = request.GET.get('filter', None)
@@ -37,6 +37,13 @@ def event_create(request, community_pk):
             event.organizer = request.user
             event.community = community
             event.save()
+
+            tag_string = form.cleaned_data.get('tags', '')
+            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
+            for name in tag_names:
+                tag, _ = Tag.objects.get_or_create(name=name)
+                event.tags.add(tag)
+
             Participation.objects.create(user=request.user, event=event, status='GOING')
             return redirect('event_detail', pk=event.pk)
     else:
@@ -53,23 +60,31 @@ def join_event(request, pk):
 @login_required
 def event_edit(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    
-    # Check if user is the organizer
+
     if request.user != event.organizer:
         messages.error(request, 'You can only edit events you organized.')
         return redirect('event_detail', pk=event.pk)
-    
+
     if request.method == 'POST':
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
-            form.save()
+            event = form.save()
+            event.tags.clear()
+
+            tag_string = form.cleaned_data.get('tags', '')
+            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
+            for name in tag_names:
+                tag, _ = Tag.objects.get_or_create(name=name)
+                event.tags.add(tag)
+
             messages.success(request, 'Event has been updated!')
             return redirect('event_detail', pk=event.pk)
     else:
-        form = EventForm(instance=event)
-    
+        initial_tags = ', '.join(tag.name for tag in event.tags.all())
+        form = EventForm(instance=event, initial={'tags': initial_tags})
+
     return render(request, 'events/event_form.html', {
-        'form': form, 
+        'form': form,
         'community': event.community,
         'edit_mode': True,
         'event': event
