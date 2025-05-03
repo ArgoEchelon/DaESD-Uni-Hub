@@ -10,8 +10,9 @@ from django.db.models import Q
 def post_list(request):
     query = request.GET.get('q', '')
     filter_option = request.GET.get('filter', None)
-    
-    posts = Post.objects.all()
+
+    # Prefetch related to reduce N+1 queries
+    posts = Post.objects.select_related('author', 'community').prefetch_related('tags', 'likes')
 
     if filter_option == 'my_posts' and request.user.is_authenticated:
         posts = posts.filter(author=request.user)
@@ -22,15 +23,17 @@ def post_list(request):
     if query:
         keywords = [kw.strip() for kw in query.split(',') if kw.strip()]
         q_objects = Q()
-
         for keyword in keywords:
             q_objects |= Q(title__icontains=keyword) | Q(content__icontains=keyword) | Q(tags__name__icontains=keyword)
-
         posts = posts.filter(q_objects).distinct()
 
     posts = posts.order_by('-created_at')
 
-    return render(request, 'posts/post_list.html', {'posts': posts, 'filter': filter_option, 'query': query})
+    return render(request, 'posts/post_list.html', {
+        'posts': posts,
+        'filter': filter_option,
+        'query': query
+    })
 
 @login_required
 def post_detail(request, pk):
