@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from communities.models import Community
-from communities.models import Tag
-from taggit.managers import TaggableManager
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -13,7 +11,6 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='posts')
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
-    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
     
     def __str__(self):
         return self.title

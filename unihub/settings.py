@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'events',
     'posts',
     'notifications',
-    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -91,9 +90,9 @@ WSGI_APPLICATION = 'unihub.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DATABASE_NAME', 'uweflix_db'),
+        'NAME': os.environ.get('DATABASE_NAME', 'unihub'),
         'USER': os.environ.get('DATABASE_USER', 'root'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', '27200123Fe'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Password'),
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
         'OPTIONS': {

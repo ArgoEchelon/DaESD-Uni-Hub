@@ -38,8 +38,7 @@ def search(request):
             Q(title__icontains=query) |
             Q(content__icontains=query)
         ).distinct()
-        
-        # Add user search
+
         users = User.objects.filter(
             Q(username__icontains=query) |
             Q(first_name__icontains=query) |

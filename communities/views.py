@@ -4,8 +4,6 @@ from django.contrib import messages
 from .models import Community, Membership
 from . forms import CommunityForm
 from django.db.models import Q
-from .models import Community, Membership
-from communities.models import Tag
 
 @login_required
 def community_list(request):
@@ -41,18 +39,10 @@ def community_create(request):
             community.owner = request.user
             community.save()
             Membership.objects.create(user=request.user, community=community, role='ADMIN')
-
-            tag_string = form.cleaned_data.get('tags', '')
-            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
-            for name in tag_names:
-                tag, created = Tag.objects.get_or_create(name=name)
-                community.tags.add(tag)
-
             return redirect('community_detail', pk=community.pk)
     else:
         form = CommunityForm()
     return render(request, 'communities/community_form.html', {'form': form})
-
 
 @login_required
 def join_community(request, pk):
@@ -65,6 +55,7 @@ def join_community(request, pk):
 def community_delete(request, pk):
     community = get_object_or_404(Community, pk=pk)
     
+    # Check if user is the owner or has admin rights
     if request.user != community.owner:
         membership = get_object_or_404(Membership, user=request.user, community=community)
         if membership.role != 'ADMIN':
@@ -82,34 +73,25 @@ def community_delete(request, pk):
 @login_required
 def community_edit(request, pk):
     community = get_object_or_404(Community, pk=pk)
-
+    
+    # Check if user is the owner or has admin rights
     if request.user != community.owner:
         membership = get_object_or_404(Membership, user=request.user, community=community)
         if membership.role != 'ADMIN':
             messages.error(request, 'You must be the community owner to edit it.')
             return redirect('community_detail', pk=community.pk)
-
+    
     if request.method == 'POST':
         form = CommunityForm(request.POST, request.FILES, instance=community)
         if form.is_valid():
-            community = form.save(commit=False)
-            community.save()
-            community.tags.clear()
-
-            tag_string = form.cleaned_data.get('tags', '')
-            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
-            for name in tag_names:
-                tag, _ = Tag.objects.get_or_create(name=name)
-                community.tags.add(tag)
-
+            form.save()
             messages.success(request, f'Community "{community.name}" has been updated!')
             return redirect('community_detail', pk=community.pk)
     else:
         form = CommunityForm(instance=community)
-
+    
     return render(request, 'communities/community_form.html', {
         'form': form,
         'edit_mode': True,
         'community': community
     })
-
