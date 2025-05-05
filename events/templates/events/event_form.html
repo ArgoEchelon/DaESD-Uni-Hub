@@ -1,25 +1,62 @@
 {% extends "base.html" %}
-{% block title %}{% if edit_mode %}Edit{% else %}Create{% endif %} Event{% endblock %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% if edit_mode %}Edit{% else %}Create{% endif %} Event
+{% endblock %}
+
 {% block content %}
-    <div class="card">
-        <div class="card-header">
-            <h2>{% if edit_mode %}Edit{% else %}Create{% endif %} Event for {{ community.name }}</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <fieldset class="form-group">
-                    {{ form.as_p }}
-                </fieldset>
-                <div class="form-group">
-                    <button class="btn btn-primary" type="submit">{% if edit_mode %}Update{% else %}Create{% endif %} Event</button>
-                    {% if edit_mode %}
-                        <a class="btn btn-secondary" href="{% url 'event_detail' event.pk %}">Cancel</a>
-                    {% else %}
-                        <a class="btn btn-secondary" href="{% url 'community_detail' community.pk %}">Cancel</a>
-                    {% endif %}
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white fw-semibold">
+    <i class="fas fa-calendar-alt"></i>
+    {% if edit_mode %}Edit{% else %}Create{% endif %} Event for {{ community.name }}
+  </div>
+
+  <div class="card-body">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_title" class="form-label">Title</label>
+        {{ form.title|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_description" class="form-label">Description</label>
+        {{ form.description|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_location" class="form-label">Location</label>
+        {{ form.location|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_start_time" class="form-label">Start Time</label>
+        {{ form.start_time|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_end_time" class="form-label">End Time</label>
+        {{ form.end_time|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_tags" class="form-label">Tags (comma-separated)</label>
+        {{ form.tags|add_class:"form-control" }}
+      </div>
+
+      <div class="d-flex justify-content-end">
+        {% if edit_mode %}
+          <a class="btn btn-secondary me-2" href="{% url 'event_detail' event.pk %}">Cancel</a>
+        {% else %}
+          <a class="btn btn-secondary me-2" href="{% url 'community_detail' community.pk %}">Cancel</a>
+        {% endif %}
+        <button type="submit" class="btn btn-success">
+          {% if edit_mode %}Update{% else %}Create{% endif %} Event
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}

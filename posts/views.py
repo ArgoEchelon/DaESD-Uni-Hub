@@ -4,21 +4,33 @@ from django.contrib import messages
 from django.db.models import Count, Q
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
-from communities.models import Community, Membership
+from communities.models import Community, Membership, Tag
+
 def post_list(request):
+    query = request.GET.get('q', '')
     filter_option = request.GET.get('filter', None)
     search_query = request.GET.get('q', '')  # Get search query
+    
+    posts = Post.objects.all()
 
     if filter_option == 'my_posts' and request.user.is_authenticated:
-        # Filter posts by current user
-        posts = Post.objects.filter(author=request.user).order_by('-created_at')
+        posts = posts.filter(author=request.user)
     elif request.user.is_authenticated:
-        # Get communities the user is a member of
         user_communities = request.user.communities.all()
-        posts = Post.objects.filter(community__in=user_communities).order_by('-created_at')
-    else:
-        # For non-authenticated users, show all posts
-        posts = Post.objects.all().order_by('-created_at')
+        posts = posts.filter(community__in=user_communities)
+    
+    if query:
+        keywords = [kw.strip() for kw in query.split(',') if kw.strip()]
+        q_objects = Q()
+
+        for keyword in keywords:
+            q_objects |= Q(title__icontains=keyword) | Q(content__icontains=keyword) | Q(tags__name__icontains=keyword)
+
+        posts = posts.filter(q_objects).distinct()
+
+    posts = posts.order_by('-created_at')
+
+    return render(request, 'posts/post_list.html', {'posts': posts, 'filter': filter_option, 'query': query})
 
     # Apply search filter
     if search_query:
@@ -56,12 +68,11 @@ def post_detail(request, pk):
 @login_required
 def post_create(request, community_id):
     community = get_object_or_404(Community, id=community_id)
-    
-    # Check if user is a member of the community
+
     if not Membership.objects.filter(user=request.user, community=community).exists():
         messages.error(request, 'You must be a member of the community to create posts.')
         return redirect('community_detail', pk=community.pk)
-    
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -69,33 +80,48 @@ def post_create(request, community_id):
             post.author = request.user
             post.community = community
             post.save()
+
+            tag_string = form.cleaned_data.get('tags', '')
+            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
+            for name in tag_names:
+                tag, _ = Tag.objects.get_or_create(name=name)
+                post.tags.add(tag)
+
             messages.success(request, 'Post created successfully!')
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm()
-    
+
     return render(request, 'posts/post_form.html', {'form': form, 'community': community})
 
 @login_required
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    
-    # Check if user is the author
+
     if request.user != post.author:
         messages.error(request, 'You can only edit your own posts.')
         return redirect('post_detail', pk=post.pk)
-    
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            form.save()
+            post = form.save()
+            post.tags.clear()
+
+            tag_string = form.cleaned_data.get('tags', '')
+            tag_names = [t.strip() for t in tag_string.split(',') if t.strip()]
+            for name in tag_names:
+                tag, _ = Tag.objects.get_or_create(name=name)
+                post.tags.add(tag)
+
             messages.success(request, 'Your post has been updated!')
             return redirect('post_detail', pk=post.pk)
     else:
-        form = PostForm(instance=post)
-    
+        initial_tags = ', '.join(tag.name for tag in post.tags.all())
+        form = PostForm(instance=post, initial={'tags': initial_tags})
+
     return render(request, 'posts/post_form.html', {
-        'form': form, 
+        'form': form,
         'community': post.community,
         'edit_mode': True,
         'post': post
@@ -105,7 +131,6 @@ def post_edit(request, pk):
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk)
     
-    # Check if user is the author
     if request.user != post.author:
         messages.error(request, 'You can only delete your own posts.')
         return redirect('post_detail', pk=post.pk)
