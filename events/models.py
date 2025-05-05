@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from communities.models import Community, Tag  # ✅ Import Tag
+from communities.models import Community, Tag
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -12,7 +12,7 @@ class Event(models.Model):
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organized_events')
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='events')
     participants = models.ManyToManyField(User, through='Participation', related_name='events')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='events')  # ✅ Tag support
+    tags = models.ManyToManyField(Tag, blank=True, related_name='events')
 
     def __str__(self):
         return self.title

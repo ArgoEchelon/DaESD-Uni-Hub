@@ -5,13 +5,12 @@ from django.db.models import Count, Q
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from communities.models import Community, Membership, Tag
-from django.db.models import Q
 
 def post_list(request):
     query = request.GET.get('q', '')
     filter_option = request.GET.get('filter', None)
 
-    # Prefetch related to reduce N+1 queries
+    # Efficient query to reduce N+1 problems
     posts = Post.objects.select_related('author', 'community').prefetch_related('tags', 'likes')
 
     if filter_option == 'my_posts' and request.user.is_authenticated:
@@ -19,7 +18,7 @@ def post_list(request):
     elif request.user.is_authenticated:
         user_communities = request.user.communities.all()
         posts = posts.filter(community__in=user_communities)
-    
+
     if query:
         keywords = [kw.strip() for kw in query.split(',') if kw.strip()]
         q_objects = Q()
@@ -95,8 +94,7 @@ def post_edit(request, pk):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.save()
+            post = form.save()
             post.tags.clear()
 
             tag_string = form.cleaned_data.get('tags', '')
@@ -117,7 +115,6 @@ def post_edit(request, pk):
         'edit_mode': True,
         'post': post
     })
-
 
 @login_required
 def post_delete(request, pk):

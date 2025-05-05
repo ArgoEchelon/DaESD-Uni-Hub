@@ -18,7 +18,8 @@
       </div>
     </form>
 
-    {% if communities or events or posts %}
+    {% if communities or events or posts or users %}
+
       <!-- Communities -->
       <h5 class="mt-4">Communities</h5>
       {% if communities %}
@@ -73,6 +74,31 @@
         </div>
       {% else %}
         <p class="text-muted">No posts matched your search.</p>
+      {% endif %}
+
+      <!-- People -->
+      <h5 class="mt-4">People</h5>
+      {% if users %}
+        <div class="list-group mb-4">
+          {% for user_profile in users %}
+            <a href="{% url 'user_detail' user_profile.username %}" class="list-group-item list-group-item-action">
+              <div class="d-flex align-items-center">
+                <img src="{{ user_profile.profile.profile_picture.url }}" class="rounded-circle me-3" width="40" height="40">
+                <div>
+                  <h6 class="mb-1">{{ user_profile.username }}</h6>
+                  {% if user_profile.profile.major %}
+                    <small class="text-muted">{{ user_profile.profile.major }}</small>
+                  {% endif %}
+                  {% if user_profile.profile.postcode %}
+                    <small class="d-block text-muted">Postcode: {{ user_profile.profile.postcode }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No users matched your search.</p>
       {% endif %}
 
     {% else %}

@@ -66,8 +66,7 @@ def event_edit(request, pk):
     if request.method == 'POST':
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
-            event = form.save(commit=False)
-            event.save()
+            event = form.save()
             event.tags.clear()
 
             tag_string = form.cleaned_data.get('tags', '')
@@ -88,7 +87,6 @@ def event_edit(request, pk):
         'event': event,
         'community': event.community,
     })
-
 
 @login_required
 def event_delete(request, pk):
